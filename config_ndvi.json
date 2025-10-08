@@ -1,0 +1,8 @@
+{
+  "coordinates": {
+
+  },
+  "date": "2021-10-01",
+  "output_dir": "./NDVI",
+  "sensor_parameters": ["N", "OC", "ECe", "P", "pH"]
+}

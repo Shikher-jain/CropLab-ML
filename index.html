@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Crop Yield Predictor</title>
+</head>
+<body>
+    <h1>Crop Yield Prediction</h1>
+    <textarea id="geojsonInput" placeholder="Paste your GeoJSON here..." rows="10" cols="50"></textarea><br>
+    <input type="date" id="dateInput" value="2018-10-01"><br>
+    <button onclick="predictYield()">Predict Yield</button>
+    <button onclick="generateHeatmap()">Generate Heatmap</button>
+    <div id="result"></div>
+    
+    <script>
+        async function predictYield() {
+            const geojson = JSON.parse(document.getElementById('geojsonInput').value);
+            const date = document.getElementById('dateInput').value;
+            
+            const response = await fetch('/predict', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ geojson_feature: geojson, date: date })
+            });
+            
+            const result = await response.json();
+            document.getElementById('result').innerText = `Predicted Yield: ${result.predicted_yield}`;
+        }
+        
+        async function generateHeatmap() {
+            const geojson = JSON.parse(document.getElementById('geojsonInput').value);
+            const date = document.getElementById('dateInput').value;
+            
+            const response = await fetch('/generate_heatmap', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ geojson_feature: geojson, date: date, t1: 30.0, t2: 50.0 })
+            });
+            
+            if (response.ok) {
+                const blob = await response.blob();
+                const img = document.createElement('img');
+                img.src = URL.createObjectURL(blob);
+                document.getElementById('result').appendChild(img);
+            } else {
+                document.getElementById('result').innerText = 'Error generating heatmap';
+            }
+        }
+    </script>
+</body>
+</html>
